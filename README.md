@@ -10,6 +10,9 @@ but also has a comparable huge amount of flash memory, to store even more sophis
 models on. Additionaly I really wanted to re-learn C++ and therefore chose to start
 the whole project on the ESP-IDF platform using PlatformIO.
 
+## What it does
+The ESP32 inbuilt LED will be on until you put a facemask on.
+
 ## Folder Structure
 <code>cpp</code> contains the source files for the esp32cam inference.
 <code>python</code> contains the source files I used for the python training.
