@@ -33,16 +33,10 @@ const camera_config_t camera_config = {
 };
 
 
-esp_err_t init_camera()
-{
+esp_err_t init_camera() {
     esp_err_t err = esp_camera_init(&camera_config);
     sensor_t *sensor = esp_camera_sensor_get();
     sensor->set_framesize(sensor, F_SIZE);
     sensor->set_contrast(sensor, 1);
-
-    if (err != ESP_OK){
-        printf("Camera Init Failed");
-        return err;
-    }
-    return ESP_OK;
+    return err;
 }

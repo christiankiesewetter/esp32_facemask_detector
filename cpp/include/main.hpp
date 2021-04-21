@@ -9,7 +9,7 @@
 #include <esp_system.h>
 #include <nvs_flash.h>
 
-#include <img_converters.h>
+//#include <img_converters.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

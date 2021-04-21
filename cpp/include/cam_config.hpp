@@ -35,5 +35,4 @@ namespace dimensions{
 }
 
 extern const camera_config_t camera_config;
-
 esp_err_t init_camera();

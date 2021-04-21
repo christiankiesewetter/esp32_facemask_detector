@@ -1,5 +1,7 @@
 #include "main.hpp"
 
+static const char *TAG = "MAIN";
+
 camera_fb_t *pic = nullptr;
 NN *nn = nullptr;
 const double SAFETY_MARGIN = 0.1;
@@ -21,12 +23,12 @@ static bool process_input(uint8_t* buff){
   int8_t *output = nn->run(buff, dimensions::LEN_IMG_BUF);
   int8_t result_mask = output[0];
   int8_t result_nomask = output[1];
-  printf("Uncovered Face: %f  Covered Face: %f\r\n", ((result_nomask + 128) / 255.), ((result_mask + 128) / 255.));
+  ESP_LOGI(TAG, "Uncovered Face: %f  Covered Face: %f", ((result_nomask + 128) / 255.), ((result_mask + 128) / 255.));
   return (result_nomask + SAFETY_MARGIN) > result_mask;
 }
 
 static bool take_picture_and_evaluate(){
-  printf("Taking Picture\r\n");
+  ESP_LOGI(TAG, "Taking Picture");
   pic = esp_camera_fb_get();
 
   if (pic != NULL){
@@ -46,7 +48,10 @@ void turn_led_on_if_mask(void *n){
 
 extern "C" void app_main()
 {
-    init_camera();
+    while (init_camera() != ESP_OK){
+      ESP_LOGE(TAG, "Camera Init Failed");
+    }
+
     setup_led();
     setup_interpreter();
     xTaskCreate(&turn_led_on_if_mask, (const char*) "Toggle LED", 18*1024, NULL, 1, NULL);

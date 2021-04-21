@@ -42,19 +42,13 @@ NN::NN(const void* model, const unsigned int tensor_arena_size){
 };
 
 int8_t* NN::run(uint8_t* buff, const unsigned int buff_len){
-    
     TfLiteTensor* input = m_interpreter->input(0);
-    printf("Copying InputData\r\n");
     for (unsigned int ii = 0; ii < buff_len; ii++){
         input->data.int8[ii] = buff[ii] - 128;
     }
-
-    printf("Do Inference\r\n");
     if (kTfLiteOk != m_interpreter->Invoke()) {
         TF_LITE_REPORT_ERROR(m_micro_error_reporter, "Invoke failed.");
     }
-    printf("Invoked\r\n");
-    
     TfLiteTensor* output = m_interpreter->output(0);
     return output->data.int8;
 };
