@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+
+# Python Stuff
+*__pycache__
+python/mask_model.*
+
+
+# Apple Bloaties
+.DS_Store

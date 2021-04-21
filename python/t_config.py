@@ -1,0 +1,24 @@
+import numpy as np
+
+MODEL_NAME = "mask_model"
+
+#TARGET_SIZE = (240, 320)
+#TARGET_SIZE = (120, 160)
+TARGET_SIZE = (96, 96)
+
+CHANNELS = 1
+BATCH_SIZE = 16
+
+DTYPE=np.int8
+
+DIRECTORY = "../dataset"
+FILTER_FOLDER = ['facemask','no_mask']
+
+EPOCHS = 50
+STEPS_PER_EPOCH = 647 // BATCH_SIZE
+VALIDATION_STEPS = 160 // BATCH_SIZE
+
+TF_H5_FILEPATH = f"{MODEL_NAME}.h5"
+TFLITE_FILE_PATH = f'{MODEL_NAME}.tflite'
+
+VISUALIZE = False
