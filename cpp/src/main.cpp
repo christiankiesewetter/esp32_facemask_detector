@@ -48,12 +48,14 @@ void turn_led_on_if_mask(void *n){
 
 extern "C" void app_main()
 {
-    while (init_camera() != ESP_OK){
-      ESP_LOGE(TAG, "Camera Init Failed");
-    }
+  while (init_camera() != ESP_OK){
+    ESP_LOGE(TAG, "Camera Init Failed");
+  }
 
-    setup_led();
-    setup_interpreter();
-    xTaskCreate(&turn_led_on_if_mask, (const char*) "Toggle LED", 18*1024, NULL, 1, NULL);
-
+  setup_led();
+  setup_interpreter();
+  xTaskCreate(&turn_led_on_if_mask, (const char*) "Toggle LED", 18*1024, NULL, 1, NULL);
+  
+  delete nn;
+  nn = nullptr;
 }
