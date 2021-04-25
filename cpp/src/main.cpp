@@ -23,7 +23,7 @@ static bool process_input(uint8_t* buff){
   int8_t *output = nn->run(buff, dimensions::LEN_IMG_BUF);
   int8_t result_mask = output[0];
   int8_t result_nomask = output[1];
-  ESP_LOGI(TAG, "Uncovered Face: %f  Covered Face: %f", ((result_nomask + 128) / 255.), ((result_mask + 128) / 255.));
+  printf("Uncovered Face: %f  Covered Face: %f \r\n", ((result_nomask + 128) / 255.), ((result_mask + 128) / 255.));
   return (result_nomask + SAFETY_MARGIN) > result_mask;
 }
 

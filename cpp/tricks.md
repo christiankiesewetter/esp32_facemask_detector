@@ -29,3 +29,10 @@ Add KConfig file to src folder
 
 
 # Issue 5 Watchdog deativate
+
+
+# Issue 6 set FREERTOS_HZ to 1000
+
+# SET Code Optimization from debug to -02 Performance
+
+# SET flashsize to 4mb
