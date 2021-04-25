@@ -56,6 +56,6 @@ extern "C" void app_main()
   setup_interpreter();
   xTaskCreate(&turn_led_on_if_mask, (const char*) "Toggle LED", 18*1024, NULL, 1, NULL);
   
-  delete nn;
-  nn = nullptr;
+  //delete nn;
+  //nn = nullptr;
 }
