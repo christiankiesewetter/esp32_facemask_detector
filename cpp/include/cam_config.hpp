@@ -1,8 +1,8 @@
 #pragma once
 #include "esp_camera.h"
 
-// #define F_SIZE FRAMESIZE_QQVGA // 160x120
-#define F_SIZE FRAMESIZE_96X96 
+#define F_SIZE FRAMESIZE_QQVGA // 160x120
+// #define F_SIZE FRAMESIZE_96X96 
 
 constexpr int PWDN_GPIO_NUM =     32;
 constexpr int RESET_GPIO_NUM =    -1;
@@ -22,8 +22,8 @@ constexpr int HREF_GPIO_NUM =     23;
 constexpr int PCLK_GPIO_NUM =     22;
 
 namespace dimensions{
-  constexpr unsigned int WIDTH = 96;
-  constexpr unsigned int HEIGHT = 96;
+  constexpr unsigned int WIDTH = 160;
+  constexpr unsigned int HEIGHT = 120;
   constexpr unsigned int CHANNELS = 1;
   constexpr unsigned int LEN_IMG_BUF = WIDTH * HEIGHT;
 

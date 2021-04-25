@@ -44,7 +44,7 @@ NN::NN(const void* model, const unsigned int tensor_arena_size){
 int8_t* NN::run(uint8_t* buff, const unsigned int buff_len){
     TfLiteTensor* input = m_interpreter->input(0);
     for (unsigned int ii = 0; ii < buff_len; ii++){
-        input->data.int8[ii] = buff[ii] - 128;
+        input->data.int8[ii] = static_cast<int8>(static_cast<int16>(buff[ii]) - 128);
     }
     if (kTfLiteOk != m_interpreter->Invoke()) {
         TF_LITE_REPORT_ERROR(m_micro_error_reporter, "Invoke failed.");

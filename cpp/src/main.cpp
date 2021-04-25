@@ -10,7 +10,7 @@ constexpr gpio_num_t BLINK_GPIO = gpio_num_t(4);
 constexpr uint8_t BLOCKSIZE = 10;
 
 void setup_interpreter(){
-  const unsigned int tensor_arena_size = 183 * 1024;
+  const unsigned int tensor_arena_size = 450 * 1024;
   nn = new NN(&mask_model_tflite, tensor_arena_size);
 }
 
@@ -21,10 +21,9 @@ void setup_led(){
 
 static bool process_input(uint8_t* buff){
   int8_t *output = nn->run(buff, dimensions::LEN_IMG_BUF);
-  int8_t result_mask = output[0];
-  int8_t result_nomask = output[1];
-  printf("Uncovered Face: %f  Covered Face: %f \r\n", ((result_nomask + 128) / 255.), ((result_mask + 128) / 255.));
-  return (result_nomask + SAFETY_MARGIN) > result_mask;
+  int8_t result = output[0];
+  printf("Safe: %f \r\n", ((result + 128) / 255.));
+  return result < 0;
 }
 
 static bool take_picture_and_evaluate(){
@@ -54,7 +53,7 @@ extern "C" void app_main()
 
   setup_led();
   setup_interpreter();
-  xTaskCreate(&turn_led_on_if_mask, (const char*) "Toggle LED", 18*1024, NULL, 1, NULL);
+  xTaskCreate(&turn_led_on_if_mask, (const char*) "Toggle LED", 4*1024, NULL, 1, NULL);
   
   //delete nn;
   //nn = nullptr;

@@ -1,20 +1,23 @@
+import os
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from tensorflow.keras.optimizers import Adam, SGD
-from tensorflow.keras.losses import SparseCategoricalCrossentropy
-from tensorflow.keras.metrics import SparseCategoricalAccuracy
+from tensorflow.keras.losses import SparseCategoricalCrossentropy, CategoricalCrossentropy
+from tensorflow.keras.metrics import SparseCategoricalAccuracy, CategoricalCrossentropy
 #from tensorflow_addons.losses import TripletHardLoss, TripletSemiHardLoss
 from tensorflow.keras.layers.experimental.preprocessing import Rescaling
 from t_config import *
 from model import get_model
 
-# VISUALIZE = True
+VISUALIZE = True
+DIRECTORY = "../../../Datasets/mask_data_III"
+FILTER_FOLDER = ['without_mask','with_mask']
 # EPOCHS = 1
-# STEPS_PER_EPOCH = 6
-# VALIDATION_STEPS = 2
+# steps_per_epoch = 6
+# validation_steps = 2
 
 image_gen_args = dict(
-    validation_split=0.2,
+    validation_split=VAL_SPLIT,
     rescale=1/255.,
 )
 
@@ -45,6 +48,13 @@ augment_args = dict(
 FINAL_SHAPE = tf.TensorShape([*TARGET_SIZE, CHANNELS])
 output_types = ((tf.float32), (tf.float32))
 output_shapes = ((TARGET_SIZE[0], TARGET_SIZE[1], CHANNELS),(1,))
+
+
+filecount = 0
+for folder in FILTER_FOLDER:
+    filecount += [len(f) for a,d,f in os.walk(os.path.join(DIRECTORY, folder))][0]
+steps_per_epoch = int(filecount * (1-VAL_SPLIT)) // BATCH_SIZE
+validation_steps = int(filecount * VAL_SPLIT) // BATCH_SIZE
 
 
 def get_dss():
@@ -103,15 +113,16 @@ def get_dss():
 def build_model():
     model = get_model()
     estop = tf.keras.callbacks.EarlyStopping(
-        monitor='val_accuracy',
-        min_delta=0,
-        patience=15,
+        monitor='val_binary_accuracy',
+        min_delta=1e-5,
+        patience=21,
         verbose=0,
         restore_best_weights=True)
+
     model.compile(
-        optimizer=Adam(),
-        loss = SparseCategoricalCrossentropy(from_logits=False),
-        metrics = 'accuracy')
+        optimizer=Adam(1e-04),
+        loss = 'mse',
+        metrics = 'binary_accuracy')
 
     callbacks = [estop]
     return model, callbacks
@@ -125,8 +136,8 @@ if __name__ == '__main__':
     model.fit(
         x=ds_train.batch(BATCH_SIZE, drop_remainder=True),
         validation_data=ds_valid.batch(BATCH_SIZE, drop_remainder=True),
-        steps_per_epoch = STEPS_PER_EPOCH,
-        validation_steps = VALIDATION_STEPS,
+        steps_per_epoch = steps_per_epoch,
+        validation_steps = validation_steps,
         epochs=EPOCHS,
         callbacks=callbacks)
 
@@ -140,7 +151,7 @@ if __name__ == '__main__':
             yield [tf.dtypes.cast(data, tf.float32)]
 
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
-    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
     converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
     converter.representative_dataset = representative_dataset
     converter.inference_input_type = tf.int8

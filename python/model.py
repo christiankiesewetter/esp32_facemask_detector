@@ -8,15 +8,17 @@ from t_config import *
 def get_model():
     ### Model Creation ###
     model = Sequential([
-        Conv2D(16, 3, activation='relu', padding='same', input_shape=(TARGET_SIZE[0], TARGET_SIZE[1], CHANNELS)),
+        Conv2D(16, 3, activation='relu', padding='valid', input_shape=(TARGET_SIZE[0], TARGET_SIZE[1], CHANNELS)),
         MaxPooling2D(2,2),
-        Conv2D(32, 3, activation='relu',padding='same'),
+        Conv2D(16, 3, activation='relu',padding='valid'),
         MaxPooling2D(2,2),
-        Conv2D(1, 1, activation='relu'),
+        Conv2D(16, 3, activation='relu',padding='valid'),
+        MaxPooling2D(2,2),
+        Conv2D(16, 3, activation='relu',padding='valid'),
         MaxPooling2D(2,2),
         Flatten(),
-        Dense(128, activation='relu'),
-        Dense(2, activation='softmax')
+        Dense(64, activation='relu'),
+        Dense(1)
     ])
 
     print(model.summary())
