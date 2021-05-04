@@ -13,5 +13,6 @@ class NN{
     public:
         NN(const void* mask_model_tflite, const unsigned int tensor_arena_size);
         int8_t* run(uint8_t* buff, const unsigned int buff_len);
+        ~NN();
         
 };

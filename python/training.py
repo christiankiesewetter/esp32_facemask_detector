@@ -9,9 +9,9 @@ from tensorflow.keras.layers.experimental.preprocessing import Rescaling
 from t_config import *
 from model import get_model
 
-VISUALIZE = True
-DIRECTORY = "../../../Datasets/mask_data_III"
-FILTER_FOLDER = ['without_mask','with_mask']
+#VISUALIZE = True
+#DIRECTORY = "../../../Datasets/mask_data_III"
+#FILTER_FOLDER = ['without_mask','with_mask']
 # EPOCHS = 1
 # steps_per_epoch = 6
 # validation_steps = 2

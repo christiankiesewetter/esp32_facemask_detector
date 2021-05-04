@@ -1,6 +1,5 @@
 #include "neuralnet.hpp"
 
-
 NN::NN(const void* model, const unsigned int tensor_arena_size){
     m_tensor_arena_size = tensor_arena_size;
     //tensor_arena = (uint8_t*) heap_caps_calloc(TENSOR_ARENA_SIZE, 1, MALLOC_CAP_8BIT);
@@ -51,4 +50,9 @@ int8_t* NN::run(uint8_t* buff, const unsigned int buff_len){
     }
     TfLiteTensor* output = m_interpreter->output(0);
     return output->data.int8;
+};
+
+NN::~NN(){
+    delete m_micro_error_reporter;
+    delete m_interpreter;
 };
