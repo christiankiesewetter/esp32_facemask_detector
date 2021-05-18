@@ -21,7 +21,7 @@ model = get_model()
 model.load_weights(TF_H5_FILEPATH)
 
 ############################################################################################################
-
+DIRECTORY = "../../../Datasets/mask_dataset"
 i0 = os.path.join(DIRECTORY, FILTER_FOLDER[0],f'{FILTER_FOLDER[0]}_010.jpg')
 i1 = os.path.join(DIRECTORY, FILTER_FOLDER[1],f'{FILTER_FOLDER[1]}_011.jpg')
 
@@ -30,21 +30,24 @@ def get_image(ifolder):
         ifolder, color_mode='rgb' if CHANNELS == 3 else 'grayscale', target_size=TARGET_SIZE,
         interpolation='nearest'
     )
-    display(image)
+    #display(image)
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr])
     return input_arr.astype(DTYPE)
 
 ############################################################################################################
 
-inspect_conv = Model(model.inputs, model.layers[0].output)
-convolutions = inspect_conv(get_image(i1))
 
-plt.figure(figsize=(14, 12))
-imgs_per_row = 4
-for ii in range(convolutions.shape[3]):
-    plt.subplot((convolutions.shape[3] + 1) // imgs_per_row , imgs_per_row, ii+1).imshow(convolutions[0,...,ii], cmap='Greys_r')
-    plt.axis('off')
+for k,l in enumerate([layer for layer in model.layers if 'conv' in layer.name.lower()]):
+    inspect_conv = Model(model.inputs, l.output)
+    for conv_img in [i1, i0]:
+        convolutions = inspect_conv(get_image(conv_img))
+        plt.figure(figsize=(14, 12))
+        imgs_per_row = 4
+        for ii in range(convolutions.shape[3]):
+            plt.subplot((convolutions.shape[3] + 1) // imgs_per_row , imgs_per_row, ii+1).imshow(convolutions[0,...,ii], cmap='Greys_r')
+            plt.axis('off')
 
-plt.tight_layout()
-plt.show()
+        plt.tight_layout()
+        plt.title(f"Result After Convolution {k}")
+        plt.show()
