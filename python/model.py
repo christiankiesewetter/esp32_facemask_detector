@@ -7,6 +7,7 @@ from t_config import *
 
 def get_model():
     ### Model Creation ###
+    ### Actually an open face detector ###
     model = Sequential([
         Conv2D(16, 3, activation='relu', padding='valid', input_shape=(TARGET_SIZE[0], TARGET_SIZE[1], CHANNELS)),
         MaxPooling2D(2,2),
@@ -17,8 +18,9 @@ def get_model():
         Conv2D(16, 3, activation='relu',padding='valid'),
         MaxPooling2D(2,2),
         Flatten(),
-        Dense(64, activation='relu'),
-        Dense(1)
+        Dense(64, activation='relu'), # Relu because we can want to use logits
+        Dense(1)                      # as output for better interpretable
+                                      # qunatization output in range [-127, 128]
     ])
 
     print(model.summary())

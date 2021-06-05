@@ -25,18 +25,25 @@ model.load_weights(TF_H5_FILEPATH)
 CHANNELS = 3
 ############################################################################################################
 DIRECTORY = "../../../Datasets/mask_dataset"
-i0 = os.path.join(DIRECTORY, FILTER_FOLDER[0],f'{FILTER_FOLDER[0]}_008.jpg')
+i0 = os.path.join(DIRECTORY, FILTER_FOLDER[0],f'{FILTER_FOLDER[0]}_016.jpg')
 i1 = os.path.join(DIRECTORY, FILTER_FOLDER[1],f'{FILTER_FOLDER[1]}_023.jpg')
+
+def to_int8(input_img):
+    input_arr = input_img - 127
+    input_arr = input_arr.astype(DTYPE)
+    return input_arr
 
 def get_image(ifolder):
     image = tf.keras.preprocessing.image.load_img(
         ifolder, color_mode='rgb' if CHANNELS == 3 else 'grayscale', target_size=TARGET_SIZE,
         interpolation='nearest'
     )
-    display(image)
+    #display(image)
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
-    input_arr = np.array([input_arr])
-    return input_arr.astype(DTYPE)
+    return np.array([input_arr], dtype=np.int16)
+
+
+
 
 ############################################################################################################
 
@@ -58,21 +65,21 @@ def get_image(ifolder):
 img_0 = get_image(i0)[0]
 img_1 = get_image(i1)[0]
 
-def predict_fn(image_in):
-    r = skimage.color.rgb2gray(image_in)
-    return model.predict(r[...,np.newaxis])
+def predict_fn(in_r):
+    in_r = in_r * np.array([[0.2125,0.7154, 0.0721]])
+    r = np.array(in_r.sum(axis=-1)[..., np.newaxis] - 127.).astype(np.int8)
+    return model.predict(r)
 
 explainer = lime_image.LimeImageExplainer()
-explanation = explainer.explain_instance(img_0,predict_fn,top_labels=1,hide_color=1,num_samples=600)
-_, mask = explanation.get_image_and_mask(explanation.top_labels[0],positive_only=True,num_features=10,hide_rest=False)
-plt.imshow(mask, cmap="Greys_r")
+explanation = explainer.explain_instance(img_0, predict_fn, top_labels=1, num_samples=1000)
+_, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=True, num_features=2, hide_rest=False)
+plt.imshow(img_0 * np.expand_dims(mask, axis=-1))
 plt.axis('off')
 plt.show()
 
-explainer = lime_image.LimeImageExplainer()
-explanation = explainer.explain_instance(img_1,predict_fn,top_labels=1,hide_color=1,num_samples=600)
-_, mask = explanation.get_image_and_mask(explanation.top_labels[0],positive_only=True,num_features=10,hide_rest=False)
-plt.imshow(mask, cmap="Greys_r")
+explanation = explainer.explain_instance(img_1, predict_fn, top_labels=1, num_samples=1000)
+_, mask = explanation.get_image_and_mask(explanation.top_labels[0],positive_only=True,num_features=2,hide_rest=False)
+plt.imshow(img_1 * np.expand_dims(mask, axis=-1))
 plt.axis('off')
 plt.show()
 
